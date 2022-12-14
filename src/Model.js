@@ -5,7 +5,7 @@ const initModel = {
   nextId: 1,
   editId: null,
   cards: [],
-  toogle: 0,
+  toggle: 0,
   answerStatus: "",
   score: 0
 };

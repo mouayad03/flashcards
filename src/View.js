@@ -12,7 +12,7 @@ function cell(tag, className, value) {
 }
 
 function cardRow(dispatch, className, card) {
-  if (card.toogle == 0) {
+  if (card.toggle == 0) {
     return tr({ className: "text-left" }, [
       div({className: "w-80 h-80 bg-amber-300 inline-block ml-2 text-ellipsis overflow-hidden"}, [
       cell(td, "px-1 py-2 text-left font-bold ...", "Question"),
@@ -28,7 +28,7 @@ function cardRow(dispatch, className, card) {
       cell(div, "px-1 py-2 text-right", ""),
   ]),
 ]);
-  } else if (card.toogle == 1) {
+  } else if (card.toggle == 1) {
     return tr({ className: "text-left" }, [
       div({className: "w-80 h-80 bg-amber-300 inline-block ml-2 text-ellipsis overflow-hidden" }, [
       cell(td, "px-1 py-2 text-left font-bold ...", "Question"),

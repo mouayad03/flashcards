@@ -70,38 +70,38 @@ function update(msg, model) {
       const estimateText = estimate[0];
       const estimatescore = estimate[1];
 
-      const toogle = msg.changeTextStatus;
+      const toggle = msg.changeTextStatus;
       const neuValue = msg.changedValue;
       const oneCard = R.filter(
         card => card.id == id
       , model.cards);
       if (neuValue === "") {
-        const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:oneCard[0].back, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+        const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:oneCard[0].back, toggle: toggle, answerStatus: estimateText, score: estimatescore};
         const cards = [...model.cards, card]
         return {...model, cards, nextId: card.id, description: '',
         back: 0,
         showForm: false,
-        toogle: toogle,
+        toggle: toggle,
         answerStatus: ""
         };
       } else if (msg.changeType == 1) {
-        const card = {id:oneCard[oneCard.length - 1].id + 1, description:neuValue, back:oneCard[0].back, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+        const card = {id:oneCard[oneCard.length - 1].id + 1, description:neuValue, back:oneCard[0].back, toggle: toggle, answerStatus: estimateText, score: estimatescore};
         const cards = [...model.cards, card]
         console.log(cards);
         return {...model, cards, nextId: card.id, description: '',
         back: 0,
         showForm: false,
-        toogle: toogle,
+        toggle: toggle,
         answerStatus: ""
         };
       }
-      const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:neuValue, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+      const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:neuValue, toggle: toggle, answerStatus: estimateText, score: estimatescore};
       const cards = [...model.cards, card]
       console.log(cards);
       return {...model, cards, nextId: card.id, description: '',
       back: 0,
       showForm: false,
-      toogle: toogle,
+      toggle: toggle,
       answerStatus: ""
       };
     }
@@ -135,8 +135,8 @@ function update(msg, model) {
 }
 
 function add(model) {
-  const { nextId, description, back, toogle } = model;
-  const card = { id: nextId + 1, description, back, toogle:0};
+  const { nextId, description, back, toggle } = model;
+  const card = { id: nextId + 1, description, back, toggle:0};
   const cards = [...model.cards, card]
   return {
     ...model,
@@ -145,7 +145,7 @@ function add(model) {
     description: '',
     back: 0,
     showForm: false,
-    toogle: 0,
+    toggle: 0,
     score: 0
   };
 }
