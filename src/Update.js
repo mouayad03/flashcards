@@ -1,66 +1,126 @@
-import * as R from 'ramda';
+const R = require('ramda');
 
 const MSGS = {
   SHOW_FORM: 'SHOW_FORM',
-  FRONT_INPUT: 'FRONT_INPUT',
-  BACK_INPUT: 'BACK_INPUT',
-  SAVE_FRONT: 'SAVE_FRONT',
+  description_INPUT: 'description_INPUT',
+  ANSWER_INPUT: 'ANSWER_INPUT',
+  SAVE_CARD: 'SAVE_CARD',
   DELETE_CARD: 'DELETE_CARD',
-  UPDATE_BACK: 'UPDATE_BACK',
-  SAVE_BACK: 'SAVE_BACK'
+  ANSWER_SHOW: 'ANSWER_SHOW'
 };
 
-export function showFormMsg(showForm) {
+function showFormMsg(showForm) {
   return {
     type: MSGS.SHOW_FORM,
     showForm,
   };
 }
 
-export function frontInputMsg(description) {
+function frontInputMsg(description) {
   return {
-    type: MSGS.FRONT_INPUT,
+    type: MSGS.description_INPUT,
     description,
   };
 }
 
-export function backInputMsg(back) {
+function backInputMsg(back) {
   return {
-    type: MSGS.BACK_INPUT,
+    type: MSGS.ANSWER_INPUT,
     back,
   };
 }
 
-export const saveFrontMsg = { type: MSGS.SAVE_FRONT };
-export const saveBackMsg = { type: MSGS.SAVE_BACK };
+const saveCardMsg = { type: MSGS.SAVE_CARD };
 
-export function deleteCardMsg(id) {
+function deleteCardMsg(id) {
   return {
     type: MSGS.DELETE_CARD,
     id,
   };
 }
 
+function showAnswer(id, showAnswer = "", changeTextStatus = 1, changeddescription = "", changedAnswer = "") {
+  if (changedAnswer=== "") {
+    return {
+      type: MSGS.ANSWER_SHOW,
+      id,
+      showAnswer,
+      changeTextStatus,
+      changedValue: changeddescription,
+      changeType: 1
+    };
+  } 
+  return {
+    type: MSGS.ANSWER_SHOW,
+    id,
+    showAnswer,
+    changeTextStatus,
+    changedValue: changedAnswer,
+    changeType: 2
+  };
+}
+
 function update(msg, model) {
   switch (msg.type) {
+    case MSGS.ANSWER_SHOW: {
+      const id = msg.id ;
+
+      const estimateData = msg.showAnswer;
+      const estimate = estimateData.split(' ');
+      const estimateText = estimate[0];
+      const estimatescore = estimate[1];
+
+      const toogle = msg.changeTextStatus;
+      const neuValue = msg.changedValue;
+      const oneCard = R.filter(
+        card => card.id == id
+      , model.cards);
+      if (neuValue === "") {
+        const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:oneCard[0].back, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+        const cards = [...model.cards, card]
+        return {...model, cards, nextId: card.id, description: '',
+        back: 0,
+        showForm: false,
+        toogle: toogle,
+        answerStatus: ""
+        };
+      } else if (msg.changeType == 1) {
+        const card = {id:oneCard[oneCard.length - 1].id + 1, description:neuValue, back:oneCard[0].back, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+        const cards = [...model.cards, card]
+        console.log(cards);
+        return {...model, cards, nextId: card.id, description: '',
+        back: 0,
+        showForm: false,
+        toogle: toogle,
+        answerStatus: ""
+        };
+      }
+      const card = {id:oneCard[oneCard.length - 1].id + 1, description:oneCard[0].description, back:neuValue, toogle: toogle, answerStatus: estimateText, score: estimatescore};
+      const cards = [...model.cards, card]
+      console.log(cards);
+      return {...model, cards, nextId: card.id, description: '',
+      back: 0,
+      showForm: false,
+      toogle: toogle,
+      answerStatus: ""
+      };
+    }
     case MSGS.SHOW_FORM: {
       const { showForm } = msg;
-      return { ...model, showForm, description: '', };
+      return { ...model, showForm, description: '', back: 0 };
     }
-    case MSGS.FRONT_INPUT: {
+    case MSGS.description_INPUT: {
       const { description } = msg;
       return { ...model, description };
     }
-    case MSGS.BACK_INPUT: {
-      const { back } = msg;
+    case MSGS.ANSWER_INPUT: {
+      const back = R.pipe( 
+        R.defaultTo(0),
+      )(msg.back);
       return { ...model, back };
     }
-    case MSGS.SAVE_FRONT: {
-      const updatedModel = add(msg, model);
-      return updatedModel;
-    }
-    case MSGS.SAVE_BACK: {
-      const updatedModel = add(msg, model);
+    case MSGS.SAVE_CARD: {
+      const updatedModel = add(model);
       return updatedModel;
     }
     case MSGS.DELETE_CARD: {
@@ -70,26 +130,24 @@ function update(msg, model) {
       , model.cards);
       return { ...model, cards };
     }
-    case MSGS.UPDATE_BACK: {
-      const { description } = msg;
-      return { ...model, description };
-    }
   }
   return model;
 }
 
-function add(msg, model) {
-  const { nextId, description, back } = model;
-  const card = { id: nextId, description, back };
+function add(model) {
+  const { nextId, description, back, toogle } = model;
+  const card = { id: nextId + 1, description, back, toogle:0};
   const cards = [...model.cards, card]
   return {
     ...model,
     cards,
     nextId: nextId + 1,
     description: '',
-    back: '',
+    back: 0,
     showForm: false,
+    toogle: 0,
+    score: 0
   };
 }
 
-export default update;
+module.exports = {update, MSGS, add, showFormMsg, frontInputMsg, backInputMsg, saveCardMsg, deleteCardMsg, showAnswer};
